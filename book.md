@@ -270,7 +270,11 @@ This makes it easy to create a cluster, play with it, break it, tear it down and
      
      ✨
 1. Welcome to your first kubernetes cluster!
-Since we're using kind, we can run
+
+grab some info about it with `kubectl cluster-info --context kind-kind`
+
+
+Since we're using kind, we can just run
 ```bash
  docker exec -it kind-control-plane bash
 ```
@@ -281,7 +285,6 @@ ps auxwf
 Whew, that's a bunch of stuff! What the hell is it all doing?
 
 
-add see there's a bunch of stuff running.
 
 1. **Create a namespace**
      ```bash
@@ -343,12 +346,8 @@ In another, run `kubectl logs -f hello-world-deployment-55d56654d8-4lwxj` and ru
 You should see it log that it got connected to.
 
 Okay great, but that was a lot of bullshit to get that!
-Yes it is, but now we're serving it via a pod, and it's highly available.
-We can shoot one of those pods in the head and it'll keep going.
+Don't worry, we're just getting started with the layers of crap.
 
-``` bash
-k delete pod hello-world-deployment-55d56654d8-4lwxj
-```
 If you run `k get service`, you'll get 
 ``` bash
 NAME          TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)        AGE
@@ -357,26 +356,39 @@ kubernetes    ClusterIP   10.96.0.1      <none>        443/TCP        78m
 ```
 but don't get excited, those IPs aren't reachable.
 
-Looking at hello-world.yaml, we have a couple of key pieces to understand.
+Before we continue, let's look at what we've done so far.
+We've created a binary, stuck it in a container, loaded that container into our cluster, 
+created a deployment, told it to run our binary, and we're able to observe that the binary is running.
 
-grep 
+Look over the yaml file and grep for ^kind.
 
- 
-cat 
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: hello-world-deployment
-  labels:
-    app: hello-world
-spec:
-  selector:
-    matchLabels:
-      app: hello-world
-  replicas: 2 
-> foo.yaml
+---
+### **Ingress**
+
+Destroy our existing cluster with `kind delete cluster`
+Create a new one with a few more options: `kind create cluser --config cluster.yaml`
+
+This will take a bit longer. This time we've got a couple control plane nodes and some worker nodes.
+
+Load the image into our fresh cluster:
+
+```bash
+kind load docker-image hello
 ```
 
+So now 
+
+Yes it is, but now we're serving it via a pod, and it's highly available.
+
+
+
+
+
+We can shoot one of those pods in the head and it'll keep going.
+
+``` bash
+k delete pod hello-world-deployment-55d56654d8-4lwxj
+```
 
 Let's configure ingress:
 
@@ -403,9 +415,14 @@ Then install nginx as an ingress controller:
 
 ```bash
 kubectl apply -f https://kind.sigs.k8s.io/examples/ingress/deploy-ingress-nginx.yaml
-```
 
 
+```k delete pods `k get pods | tail -n +2 | awk1 `
+
+
+ true; do curl localhost/foo; sleep .2
+done
+o
 
 
 What can you do with this?
